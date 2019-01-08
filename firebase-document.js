@@ -83,15 +83,17 @@ Polymer({
         path = parentPath + '/' + key;
         resolve(this._setFirebaseValue(path, this.data));
       } else {
-        path = firebase.database(this.app).ref(parentPath)
-            .push(this.data, function(error) {
-              if (error) {
-                reject(error);
-                return;
-              }
-
-              resolve();
-            }).path.toString();
+        let generatedKey;
+        const pushedValue = firebase.database(this.app).ref(parentPath)
+          .push(this.data, (error) => {
+            if (error) {
+              reject(error);
+              return;
+            }
+            resolve(generatedKey);
+          })
+        generatedKey = pushedValue.key;
+        path = pushedValue.path.toString();
       }
 
       this.path = path;
